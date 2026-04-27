@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     container_name: stash-box-postgres
-    build: ./postgres
+    image: ghcr.io/markd3ng/stash-box/postgres:latest
     restart: unless-stopped
     environment:
       POSTGRES_USER: stashbox
@@ -14,9 +14,7 @@ services:
 
   stash-box:
     container_name: stash-box
-    build:
-      context: ../..
-      dockerfile: docker/production/stash-box/Dockerfile
+    image: ghcr.io/markd3ng/stash-box/stash-box:latest
     restart: unless-stopped
     depends_on:
       - postgres
