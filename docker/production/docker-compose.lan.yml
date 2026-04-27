@@ -14,7 +14,9 @@ services:
 
   stash-box:
     container_name: stash-box
-    image: stashapp/stash-box:development
+    build:
+      context: ../..
+      dockerfile: docker/production/stash-box/Dockerfile
     restart: unless-stopped
     depends_on:
       - postgres
