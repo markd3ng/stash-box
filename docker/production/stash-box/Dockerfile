@@ -28,7 +28,6 @@ RUN go mod download
 COPY . .
 COPY --from=frontend /app/frontend/build ./frontend/build
 
-RUN go generate ./...
 RUN make build
 
 # Stage 3: Runtime
