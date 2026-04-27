@@ -17,9 +17,6 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
-      packages: write
-    env:
-      HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' }}
 
     steps:
 
@@ -193,21 +190,3 @@ jobs:
           CHECKSUMS_SHA1
         gzip: false
 
-    - name: Login to DockerHub
-      if: ${{ github.event_name != 'pull_request' && env.HAS_DOCKERHUB == 'true' }}
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Development Docker
-      if: ${{ github.event_name == 'push' && env.HAS_DOCKERHUB == 'true' }}
-      run: |
-        docker build -t stashapp/stash-box:development -f ./docker/ci/x86_64/Dockerfile ./dist
-        docker push stashapp/stash-box:development
-
-    - name: Release Docker
-      if: ${{ github.event_name == 'release' && github.ref != 'refs/tags/latest-develop' && env.HAS_DOCKERHUB == 'true' }}
-      run: |
-        docker build -t stashapp/stash-box:latest -f ./docker/ci/x86_64/Dockerfile ./dist
-        docker push stashapp/stash-box:latest
