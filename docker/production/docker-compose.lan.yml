@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  postgres:
+  stash-db:
     container_name: stash-box-postgres
     image: ghcr.io/markd3ng/stash-box/postgres:latest
     restart: unless-stopped
@@ -9,6 +9,11 @@ services:
       POSTGRES_USER: stashbox
       POSTGRES_PASSWORD: stashbox
       POSTGRES_DB: stashbox
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stashbox -d stashbox"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -17,9 +22,10 @@ services:
     image: ghcr.io/markd3ng/stash-box/stash-box:latest
     restart: unless-stopped
     depends_on:
-      - postgres
+      stash-db:
+        condition: service_healthy
     environment:
-      STASH_BOX_DATABASE: stashbox:stashbox@postgres/stashbox?sslmode=disable
+      STASH_BOX_DATABASE: stashbox:stashbox@stash-db/stashbox?sslmode=disable
     ports:
       - 9998:9998
     logging:
