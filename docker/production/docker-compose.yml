@@ -16,13 +16,15 @@ services:
     container_name: stash-box
     image: stashapp/stash-box:development
     restart: always
+    depends_on:
+      - postgres
+    environment:
+      STASH_BOX_DATABASE: <USER>:<PASSWORD>@postgres/<DATABASE>?sslmode=disable
     logging:
       driver: "json-file"
       options:
         max-file: "10"
         max-size: "2m"
-    links:
-      - postgres
     volumes:
       - <CONFIG_DIR>:/root/.stash-box
     labels:

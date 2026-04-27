@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: stash-box-postgres
+    build: ./postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stashbox
+      POSTGRES_PASSWORD: stashbox
+      POSTGRES_DB: stashbox
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  stash-box:
+    container_name: stash-box
+    image: stashapp/stash-box:development
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      STASH_BOX_DATABASE: stashbox:stashbox@postgres/stashbox?sslmode=disable
+    ports:
+      - 9998:9998
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "2m"
+    volumes:
+      - ./config:/root/.stash-box
+
+volumes:
+  pgdata:
